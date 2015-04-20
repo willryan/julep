@@ -1,0 +1,9 @@
+source https://nuget.org/api/v2
+
+nuget Suave
+
+nuget NUnit
+nuget FsUnit
+nuget canopy
+
+nuget Fake
