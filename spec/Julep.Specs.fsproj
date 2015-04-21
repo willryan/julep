@@ -8,8 +8,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5ae9c613-acbf-4a3d-80f2-fff1ec858f1f}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Specs</RootNamespace>
-    <AssemblyName>Specs</AssemblyName>
+    <RootNamespace>Julep.Specs</RootNamespace>
+    <AssemblyName>Julep.Specs</AssemblyName>
     <BuildOrder>
       <BuildOrder>
         <String>Spec.fs</String>
