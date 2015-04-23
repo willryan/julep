@@ -11,9 +11,9 @@
     <RootNamespace>Julep</RootNamespace>
     <AssemblyName>Julep</AssemblyName>
     <BuildOrder>
-      <BuildOrder>
-        <String>Main.fs</String>
-      </BuildOrder>
+      <String>Types.fs</String>
+      <String>AggregateTypes.fs</String>
+      <String>Main.fs</String>
     </BuildOrder>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
   </PropertyGroup>
@@ -39,6 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="AggregateTypes.fs" />
+    <Compile Include="AggregateTypesBuilder.fs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />

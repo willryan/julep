@@ -13,6 +13,7 @@
     <BuildOrder>
       <BuildOrder>
         <String>Test.fs</String>
+        <String>AggregateTypesBuilderTest.fs</String>
       </BuildOrder>
     </BuildOrder>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
@@ -45,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test.fs" />
+    <Compile Include="AggregateTypesBuilderTest.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>

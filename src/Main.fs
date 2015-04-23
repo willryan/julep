@@ -1,3 +1,5 @@
+namespace Julep
+
 open System
 
 open Suave
@@ -11,15 +13,19 @@ open Suave.Log
 open System.IO
 open System.Text
 
-//let logger = Loggers.sane_defaults_for Debug
+module App =
 
-let app =
-  choose
-    [ GET >>= choose
-        [ path "/hello" >>= OK "Hello GET"
-          path "/goodbye" >>= OK "Good bye GET" ]
-      POST >>= choose
-        [ path "/hello" >>= OK "Hello POST"
-          path "/goodbye" >>= OK "Good bye POST" ] ]
+  //let logger = Loggers.sane_defaults_for Debug
 
-startWebServer defaultConfig app
+  let app =
+    choose
+      [ GET >>= choose
+          [ path "/hello" >>= OK "Hello GET"
+            path "/goodbye" >>= OK "Good bye GET" ]
+        POST >>= choose
+          [ path "/hello" >>= OK "Hello POST"
+            path "/goodbye" >>= OK "Good bye POST" ] ]
+
+
+  startWebServer defaultConfig app
+
