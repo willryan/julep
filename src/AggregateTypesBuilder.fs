@@ -4,6 +4,7 @@ open Types
 
 module AggregateTypesBuilder =
 
-  let getIncomeProjections transactions sources month =
+  let getIncomeProjections monthTransactions sources =
+    let (month,transactions) = monthTransactions
     []
 

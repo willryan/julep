@@ -12,7 +12,6 @@
     <AssemblyName>Julep.Tests</AssemblyName>
     <BuildOrder>
       <BuildOrder>
-        <String>Test.fs</String>
         <String>AggregateTypesBuilderTest.fs</String>
       </BuildOrder>
     </BuildOrder>
@@ -45,7 +44,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Test.fs" />
     <Compile Include="AggregateTypesBuilderTest.fs" />
   </ItemGroup>
   <PropertyGroup>

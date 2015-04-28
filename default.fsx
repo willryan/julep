@@ -3,7 +3,7 @@
 open Fake
 
 Target "build" (fun _ ->
-  MSBuildDebug "bin" "Build" [ "Julep.fsproj" ]
+  MSBuildDebug "" "Build" [ "Julep.fsproj" ]
   |> Log "TestBuild-Output: "
 )
 
