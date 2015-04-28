@@ -13,6 +13,7 @@
     <BuildOrder>
       <String>Types.fs</String>
       <String>AggregateTypes.fs</String>
+      <String>App.fs</String>
       <String>Main.fs</String>
     </BuildOrder>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
@@ -38,10 +39,11 @@
     <Externalconsole>True</Externalconsole>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Main.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="AggregateTypes.fs" />
     <Compile Include="AggregateTypesBuilder.fs" />
+    <Compile Include="App.fs" />
+    <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />

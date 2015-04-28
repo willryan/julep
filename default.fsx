@@ -17,6 +17,16 @@ Target "test" (fun _ ->
        OutputFile = "test/TestResults.xml"})
 )
 
+Target "start" (fun _ -> 
+  let appExe = "src/bin/Debug/Julep.exe"
+  let result = 
+    ExecProcess (fun info ->
+      info.FileName <- appExe
+    ) System.TimeSpan.MaxValue
+
+  if result <> 0 then failwith "Couldn't start server"
+)
+
 Target "spec" (fun _ -> 
   // can't find file for some reason, or a mono issue
   let canopyExe = "spec/bin/Debug/Julep.Specs.exe"
