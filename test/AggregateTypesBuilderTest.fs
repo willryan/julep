@@ -51,7 +51,6 @@ type ``gathers income projections from transactions`` ()=
 
   let findIncCat cat =
     Array.find (fun (c:IncomeCategory) -> c.Name = cat) incomeCategories
-    
 
   let tx month amount cat =
     transCategories

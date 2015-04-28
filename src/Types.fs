@@ -4,7 +4,6 @@ open System
 
 module Types =
 
-
   [<Measure>] type dollars
 
   type Account = Account of string
