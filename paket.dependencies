@@ -1,6 +1,8 @@
 source https://nuget.org/api/v2
 
 nuget Suave
+nuget FsPickler
+nuget FsPickler.Json
 
 nuget NUnit
 nuget NUnit.Runners
