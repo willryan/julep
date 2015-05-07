@@ -51,20 +51,43 @@ let appOld =
           path "/goodbye" >>= OK "Good bye POST" ] ]
 
 
+let handler resName actName ids = 
+  OK (sprintf "OK: %s#%s %A" resName actName ids)
 
-let goalsH = { Show = Some (fun _ -> OK "OK") ; Index = None ; Create = None ; Update = None ; Destroy = None }
-let transH = { Show = Some (fun _ -> OK "OK") ; Index = None ; Create = None ; Update = None ; Destroy = None }
+let testAct resName =
+  let helper act = Some (handler resName act)
+  {
+    Show = helper "Show"
+    Index = helper "Index"
+    Create = helper "Create"
+    Update = helper "Update"
+    Destroy = helper "Destroy"
+  }
 
-let resources = 
+let goalsH = testAct "Goals"
+let transH = testAct "Transactions"
+
+let resources =
   [
     resource "goals" goalsH [
       resource "transactions" transH []
-    ] 
+    ]
   ]
 
-let start () =
-  Resources <- resources
-  printRouteDefs()
+let defaultArgs = [| "server" |]
+
+let startApp () = 
   let app = makeApp()
   startWebServer defaultConfig app
+  0
+
+let start (args : string[]) =
+  let realArgs = if (args.Length = 0) then defaultArgs else args
+
+  Resources <- resources
+
+  match args.[0] with
+  | "routes" -> printRouteDefs() ; 0
+  | "server" -> startApp()
+  | _ -> printfn "Unrecognized argument %s" args.[0] ; 1
 

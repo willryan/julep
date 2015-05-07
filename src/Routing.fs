@@ -44,7 +44,7 @@ type Resource = {
   SubResources : Resource list
 }
 
-type IdsFormat<'tuple> = PrintfFormat<string -> 'tuple -> string, unit, string, string, 'tuple> 
+type IdsFormat<'tuple> = PrintfFormat<string -> 'tuple -> unit, unit, string, string, 'tuple> 
 
 let buildRouteIds ctx ids =
   List.rev ids
@@ -53,7 +53,7 @@ let buildRouteIds ctx ids =
 
 let routeMatchFn url ctx fn = 
   match ctx.Names.Length with 
-    | 0 -> pathScan (new IdsFormat<unit>(url)) (fun _ -> fn [])
+    | 0 -> path url >>= (fn [])
     | 1 -> pathScan (new IdsFormat<string>(url)) (fun id1 -> fn <| buildRouteIds ctx [id1])
     | 2 -> pathScan (new IdsFormat<string * string>(url)) (fun (id1, id2) -> fn <| buildRouteIds ctx [id1 ; id2])
     | 3 -> pathScan (new IdsFormat<string * string * string>(url)) (fun (id1, id2, id3) -> fn <| buildRouteIds ctx [id1 ; id2 ; id3])
