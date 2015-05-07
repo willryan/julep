@@ -15,6 +15,7 @@
       <String>AggregateTypes.fs</String>
       <String>AggregateTypesBuilder.fs</String>
       <String>DbTest.fs</String>
+      <String>Routing.fs</String>
       <String>App.fs</String>
       <String>Main.fs</String>
     </BuildOrder>
@@ -45,6 +46,7 @@
     <Compile Include="AggregateTypes.fs" />
     <Compile Include="AggregateTypesBuilder.fs" />
     <Compile Include="DbTest.fs" />
+    <Compile Include="Routing.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
