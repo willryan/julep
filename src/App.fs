@@ -55,22 +55,25 @@ let handler resName actName ids =
   OK (sprintf "OK: %s#%s %A" resName actName ids)
 
 let testAct resName =
-  let helper act = Some (handler resName act)
+  let testHndl act = Some (handler resName act)
   {
-    Show = helper "Show"
-    Index = helper "Index"
-    Create = helper "Create"
-    Update = helper "Update"
-    Destroy = helper "Destroy"
+    Show = None //testHndl "Show"
+    Index = testHndl "Index"
+    Create = testHndl "Create"
+    Update = testHndl "Update"
+    Destroy = testHndl "Destroy"
   }
 
 let goalsH = testAct "Goals"
 let transH = testAct "Transactions"
+let microH = testAct "Micros"
 
 let resources =
   [
     resource "goals" goalsH [
-      resource "transactions" transH []
+      resource "transactions" transH [
+        resource "micros" microH []
+      ]
     ]
   ]
 

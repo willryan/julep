@@ -14,20 +14,36 @@ open Suave.Types
 open Suave.Log
 open System.IO
 open System.Text
+open FSharp.Data.Runtime.NameUtils
 
-type RouteId = {
-  Type : string
-  Id : string
-}
+/// Colored printf
+let cprintf c fmt = 
 
-type ResourceHandler = (RouteId list -> WebPart) option
+    Printf.kprintf 
+        (fun s -> 
+            let old = System.Console.ForegroundColor 
+            try 
+              System.Console.ForegroundColor <- c;
+              System.Console.Write s
+            finally
+              System.Console.ForegroundColor <- old) 
+        fmt
+        
+// Colored printfn
+let cprintfn c fmt = 
+    cprintf c fmt
+    printfn ""
+
+type RouteIdMap = Map<string,string>
+
+type ResourceHandler = (RouteIdMap -> WebPart)
 
 type ResourceActions = {
-  Index : ResourceHandler
-  Show : ResourceHandler
-  Create : ResourceHandler
-  Update : ResourceHandler
-  Destroy : ResourceHandler
+  Index : ResourceHandler option
+  Show : ResourceHandler option
+  Create : ResourceHandler option
+  Update : ResourceHandler option
+  Destroy : ResourceHandler option
 }
 
 type ResourceContext = {
@@ -44,16 +60,16 @@ type Resource = {
   SubResources : Resource list
 }
 
-type IdsFormat<'tuple> = PrintfFormat<string -> 'tuple -> unit, unit, string, string, 'tuple> 
+type IdsFormat<'tuple> = PrintfFormat<string -> 'tuple -> unit, unit, string, string, 'tuple>
 
 let buildRouteIds ctx ids =
   List.rev ids
   |> List.zip ctx.Names
-  |> List.map (fun (name, id) -> { Type = name ; Id = id })
+  |> Map.ofList
 
-let routeMatchFn url ctx fn = 
-  match ctx.Names.Length with 
-    | 0 -> path url >>= (fn [])
+let routeMatchFn url ctx (fn:ResourceHandler) =
+  match ctx.Names.Length with
+    | 0 -> path url >>= (fn Map.empty)
     | 1 -> pathScan (new IdsFormat<string>(url)) (fun id1 -> fn <| buildRouteIds ctx [id1])
     | 2 -> pathScan (new IdsFormat<string * string>(url)) (fun (id1, id2) -> fn <| buildRouteIds ctx [id1 ; id2])
     | 3 -> pathScan (new IdsFormat<string * string * string>(url)) (fun (id1, id2, id3) -> fn <| buildRouteIds ctx [id1 ; id2 ; id3])
@@ -64,66 +80,95 @@ let routeMatchFn url ctx fn =
 let methodHandler mthd resHndl ids =
   match resHndl with
   | Some fn -> mthd >>= fn ids
-  | None -> NOT_FOUND "NOPE"
+  | None -> (fun _ -> async.Return None)
 
-let noIdRoutes resource = 
-  routeMatchFn resource.UrlNoId resource.Context (fun ids -> 
+let noIdRoutes resource =
+  routeMatchFn resource.UrlNoId resource.Context (fun ids ->
     choose [
       methodHandler GET resource.Actions.Index ids
       methodHandler POST resource.Actions.Create ids
     ])
 
 let idRoutes resource =
-  routeMatchFn resource.UrlWithId resource.Context (fun ids -> 
+  let subCtx = { Prefix = resource.UrlWithId ; Names = resource.Name :: resource.Context.Names }
+  routeMatchFn resource.UrlWithId subCtx (fun ids ->
     choose [
       methodHandler GET resource.Actions.Show ids
       methodHandler PUT resource.Actions.Update ids
       methodHandler DELETE resource.Actions.Destroy ids
     ])
 
-let rec mapResource resource = 
-  let subCtx = { Prefix = resource.UrlWithId ; Names = resource.Name :: resource.Context.Names }
-  let fmt = new PrintfFormat<string -> int -> string, unit, string, string, string>(resource.UrlWithId)
+let rec mapResource resource =
   choose [
-    noIdRoutes resource
-    idRoutes resource
     choose <| List.map (fun rsrc -> mapResource rsrc) resource.SubResources
+    idRoutes resource
+    noIdRoutes resource
   ]
 
-let resource name hndl subResources ctx = 
+let resource name hndl subResources ctx =
   let url = sprintf "%s/%s" ctx.Prefix name
   let urlWithId = url + "/%s"
   let subCtx = { Prefix = urlWithId ; Names = name :: ctx.Names }
   let subR = List.map (fun sr -> sr subCtx) subResources
 
-  { 
+  {
     UrlNoId = url
     UrlWithId = urlWithId
     Context = ctx
-    Name = name 
-    Actions = hndl 
-    SubResources = subR 
+    Name = name
+    Actions = hndl
+    SubResources = subR
   }
 
-let printRouteLn verb uri action = 
-  printfn "%-6s\t\t%-40s\t\t%-30s" verb uri action
+let printRouteLnFun verbF uriF actionF =
+  verbF
+  printf "   x    "
+  uriF
+  printf "   x    "
+  actionF
+  printfn ""
 
+let defaultRoutePrintFn v = printf "%s" v
 
-let printResourceRoute verb withId action resource =
-  let uri = if withId then resource.UrlWithId else resource.UrlNoId
-  printRouteLn verb uri (sprintf "%s#%s" resource.Name action)
+let printRouteLn (verb:string) (uri:string) (action:string) =
+  let fn = defaultRoutePrintFn
+  printRouteLnFun (fn verb) (fn uri) (fn action)
 
-let rec printRoute resource = 
+let printResourceRoute verb withId action (getAction:ResourceActions -> ResourceHandler option) resource =
+  if (getAction resource.Actions).IsSome then
+    let uri = if withId then resource.UrlWithId else resource.UrlNoId
+    let names = if withId then resource.Name :: resource.Context.Names else resource.Context.Names
+    let singNames =
+      List.map singularize names
+      |> List.rev
+    let parts = Array.toList (uri.Split([|"%s"|], System.StringSplitOptions.None))
+    let someNames = None :: (List.map (fun n -> Some <| sprintf ":%s" n) singNames)
+    let outUriParts =
+      List.zip someNames parts
+    let colorFn (pairs:(string option * string) list) =
+      pairs
+      |> List.iter (fun (someName,part) ->
+        match someName with
+        | Some name -> ignore <| cprintf ConsoleColor.Red "%s" name
+        | None -> ()
+        printf "%s" part
+      )
+
+    let actFunc = (sprintf "%s#%s" resource.Name action)
+    let fn = defaultRoutePrintFn
+    printRouteLnFun (fn verb) (colorFn outUriParts) (fn actFunc)
+
+let rec printRoute resource =
   [
-    printResourceRoute "GET" false "Index"
-    printResourceRoute "POST" false "Create"
-    printResourceRoute "GET" true "Show"
-    printResourceRoute "PUT" true "Update"
-    printResourceRoute "DELETE" true "Delete"
+    printResourceRoute "GET" false "Index" (fun a -> a.Index)
+    printResourceRoute "POST" false "Create" (fun a -> a.Create)
+    printResourceRoute "GET" true "Show" (fun a -> a.Show)
+    printResourceRoute "PUT" true "Update" (fun a -> a.Update)
+    printResourceRoute "DELETE" true "Delete" (fun a -> a.Destroy)
   ]
   |> List.iter (fun f -> f resource)
   printRoutes resource.SubResources
-  
+
 and printRoutes resources =
   List.iter printRoute resources
 
@@ -133,11 +178,11 @@ type ResourceDefinition = ResourceContext -> Resource
 
 let mutable Resources : ResourceDefinition list = []
 
-let printRouteDefs() = 
+let printRouteDefs() =
   printRouteLn "Verb" "Uri Pattern" "Action"
   printRoutes <| List.map (fun r -> r Root) Resources
 
 let makeApp () =
-  Resources 
+  Resources
   |> List.map (fun r -> mapResource (r Root))
   |> choose
