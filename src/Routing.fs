@@ -121,17 +121,17 @@ let resource name hndl subResources ctx =
   }
 
 let printRouteLnFun verbF uriF actionF =
-  verbF
-  printf "   x    "
-  uriF
-  printf "   x    "
-  actionF
+  verbF()
+  Console.SetCursorPosition(10, Console.CursorTop)
+  uriF()
+  Console.SetCursorPosition(70, Console.CursorTop)
+  actionF()
   printfn ""
 
-let defaultRoutePrintFn v = printf "%s" v
+let defaultRoutePrintFn v () = printf "%s" v
+let colorPrintFn c v () = cprintf c "%s" v
 
-let printRouteLn (verb:string) (uri:string) (action:string) =
-  let fn = defaultRoutePrintFn
+let printRouteLn fn (verb:string) (uri:string) (action:string) =
   printRouteLnFun (fn verb) (fn uri) (fn action)
 
 let printResourceRoute verb withId action (getAction:ResourceActions -> ResourceHandler option) resource =
@@ -145,11 +145,11 @@ let printResourceRoute verb withId action (getAction:ResourceActions -> Resource
     let someNames = None :: (List.map (fun n -> Some <| sprintf ":%s" n) singNames)
     let outUriParts =
       List.zip someNames parts
-    let colorFn (pairs:(string option * string) list) =
+    let colorFn (pairs:(string option * string) list) () =
       pairs
       |> List.iter (fun (someName,part) ->
         match someName with
-        | Some name -> ignore <| cprintf ConsoleColor.Red "%s" name
+        | Some name -> ignore <| cprintf ConsoleColor.Blue "%s" name
         | None -> ()
         printf "%s" part
       )
@@ -179,8 +179,10 @@ type ResourceDefinition = ResourceContext -> Resource
 let mutable Resources : ResourceDefinition list = []
 
 let printRouteDefs() =
-  printRouteLn "Verb" "Uri Pattern" "Action"
+  printfn ""
+  printRouteLn (colorPrintFn ConsoleColor.Yellow) "Verb" "Uri Pattern" "Action"
   printRoutes <| List.map (fun r -> r Root) Resources
+  printfn ""
 
 let makeApp () =
   Resources
