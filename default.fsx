@@ -8,18 +8,18 @@ Target "build" (fun _ ->
 )
 
 
-Target "test" (fun _ -> 
+Target "test" (fun _ ->
   let testDlls = !! ("test/bin/Debug/*Tests.dll")
-  testDlls 
-  |> NUnit (fun p -> 
+  testDlls
+  |> NUnit (fun p ->
     {p with
-       DisableShadowCopy = true; 
+       DisableShadowCopy = true;
        OutputFile = "test/TestResults.xml"})
 )
 
 let runApp args =
   let appExe = "src/bin/Debug/Julep.exe"
-  let result = 
+  let result =
     ExecProcess (fun info ->
       info.FileName <- appExe
       info.Arguments <- args
@@ -31,10 +31,10 @@ let runApp args =
 Target "server" (fun _ -> runApp "server")
 Target "routes" (fun _ -> runApp "routes")
 
-Target "spec" (fun _ -> 
+Target "spec" (fun _ ->
   // can't find file for some reason, or a mono issue
   let canopyExe = "spec/bin/Debug/Julep.Specs.exe"
-  let result = 
+  let result =
     ExecProcess (fun info ->
       info.FileName <- canopyExe
       info.WorkingDirectory <- "spec"

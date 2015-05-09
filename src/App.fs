@@ -1,7 +1,7 @@
 module Julep.App
 
 open System
-
+open System.Diagnostics
 open Suave
 open Suave.Web
 open Suave.Json
@@ -51,7 +51,7 @@ let appOld =
           path "/goodbye" >>= OK "Good bye POST" ] ]
 
 
-let handler resName actName ids = 
+let handler resName actName ids =
   OK (sprintf "OK: %s#%s %A" resName actName ids)
 
 let testAct resName =
@@ -79,7 +79,7 @@ let resources =
 
 let defaultArgs = [| "server" |]
 
-let startApp () = 
+let startApp () =
   let app = makeApp()
   startWebServer defaultConfig app
   0
@@ -88,6 +88,7 @@ let start (args : string[]) =
   let realArgs = if (args.Length = 0) then defaultArgs else args
 
   Resources <- resources
+  //Debugger.Break()
 
   match args.[0] with
   | "routes" -> Debug.printRouteDefs() ; 0
