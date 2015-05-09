@@ -90,7 +90,7 @@ let start (args : string[]) =
   Resources <- resources
 
   match args.[0] with
-  | "routes" -> printRouteDefs() ; 0
+  | "routes" -> Debug.printRouteDefs() ; 0
   | "server" -> startApp()
   | _ -> printfn "Unrecognized argument %s" args.[0] ; 1
 

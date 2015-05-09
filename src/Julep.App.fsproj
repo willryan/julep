@@ -11,6 +11,7 @@
     <RootNamespace>Julep</RootNamespace>
     <AssemblyName>Julep</AssemblyName>
     <BuildOrder>
+      <String>Util.fs</String>
       <String>Types.fs</String>
       <String>AggregateTypes.fs</String>
       <String>AggregateTypesBuilder.fs</String>
@@ -43,6 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Types.fs" />
+    <Compile Include="Util.fs" />
     <Compile Include="AggregateTypes.fs" />
     <Compile Include="AggregateTypesBuilder.fs" />
     <Compile Include="DbTest.fs" />
