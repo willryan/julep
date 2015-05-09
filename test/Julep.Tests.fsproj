@@ -3,10 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>
-    </ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{a745451f-7e6b-4ec5-9d36-6cf23ef4d4d0}</ProjectGuid>
+    <ProjectGuid>{A745451F-7E6B-4EC5-9D36-6CF23EF4D4D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Julep.Tests</RootNamespace>
     <AssemblyName>Julep.Tests</AssemblyName>
@@ -19,7 +16,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
@@ -36,11 +32,14 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>True</Externalconsole>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../src/Julep.App.fsproj">
-      <Project>{4e2f6fa-f29e-4938-b54f-f594e017f79e}</Project>
-      <name>Code</name>
+    <ProjectReference Include="..\src\Julep.App.fsproj">
+      <Project>{94E2F6FA-F29E-4938-B54F-F594E017F79E}</Project>
+      <Name>Julep.App</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
